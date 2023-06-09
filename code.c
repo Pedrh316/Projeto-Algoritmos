@@ -9,13 +9,6 @@ int validarData(int dia, int mes, int ano){
 }
 
 int validarTelefone(int ddd, char num[9]){
-    int v = 0;    
-    if(strlen(num) == 9){
-        v += (num[0] == '9');
-    } else if(strlen(num) == 8){
-        v++;
-    };    
-
     return ((strlen(num) == 9 && num[0] == '9') || (strlen(num) == 8)) && (ddd > 11 && ddd < 91);
 }
 
@@ -35,6 +28,6 @@ struct Telefone {
 int main(){
 
 
-
+    printf("oi");
 
 }
