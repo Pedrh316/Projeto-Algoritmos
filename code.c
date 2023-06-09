@@ -7,7 +7,6 @@
     Matheus Imazu Yoshida
 */
 
-
 struct Data {
     int dia[2];
     int mes[2];
