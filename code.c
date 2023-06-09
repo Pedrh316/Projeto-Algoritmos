@@ -3,12 +3,13 @@
 Augusto Kenji Hirata Saraiva
 RA: 2564335
 */
-struct {
-    char[50] Nome; 
-    int [11] CPF;
-    int [Telefone];
-    int[Data];
-}
+struct Cliente {
+    char Nome[50];
+    int CPF[11];
+    char Telefone[9];
+    char Data[10];
+};
 int main() {
-
+    
+    return 0;
 }
