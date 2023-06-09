@@ -5,9 +5,7 @@
     Augusto Kenji Hirata Saraiva    RA: 2564335
     Pedro Henrique da Costa Silva
     Matheus Imazu Yoshida
-    branch teste
 */
-
 
 struct Data {
     int dia[2];
