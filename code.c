@@ -1,20 +1,8 @@
 #include <stdio.h>
-/*
-Augusto Kenji Hirata Saraiva
-RA: 2564335
-*/
-struct Cliente {
-    char Nome[50];
-    int CPF[11];
-    char Telefone[9];
-    char Data[10];
-};
-int main() {
-
-    return 0;
-}
 #include <string.h>
+
 /*
+    Augusto Kenji Hirata Saraiva    RA: 2564335
     Pedro Henrique da Costa Silva
 */
 
@@ -25,8 +13,6 @@ int validarData(int dia, int mes, int ano){
 int validarTelefone(int ddd, char num[9]){
     return ((strlen(num) == 9 && num[0] == '9') || (strlen(num) == 8)) && (ddd > 11 && ddd < 91);
 }
-
-
 
 struct Data {
     int dia[2];
@@ -39,9 +25,13 @@ struct Telefone {
     char num[9];
 }
 
-int main(){
+struct Cliente {
+    char Nome[50];
+    int CPF[11];
+    char Telefone[9];
+    char Data[10];
+};
 
-
-    printf("oi");
-
+int main {
+    return 0;
 }
