@@ -7,23 +7,23 @@
     Matheus Imazu Yoshida
 */
 
-struct Data {
+typedef struct Data {
     int dia[2];
     int mes[2];
     int ano[4];
-}
+} Data;
 
-struct Telefone {
+typedef struct Telefone {
     char ddd[2];
     char num[9];
-}
+} Telefone;
 
-struct Cliente {
+typedef struct Cliente {
     char Nome[50];
     int CPF[11];
     char Telefone[9];
     char Data[10];
-};
+} Cliente;
 
 typedef struct Investimento {
         struct Data data;
@@ -34,7 +34,17 @@ typedef struct Investimento {
         char DataResgate[10];
         float ValorResgate;
 
-} Investimentos
+} Investimentos;
+
+typedef struct Transacao{
+    int idTransacao;
+    Cliente cliente;
+    Investimento investimento;
+    Data dataAplicacao;
+    float valorAplicacao;
+    Data dataResgate;
+    float valorResgate;
+} Transacao;
 
 int validarData(int dia, int mes, int ano){
     return (dia > 1 && dia < 30) && (mes > 1 || mes < 12) && (ano > 1900 || ano < 2023);
