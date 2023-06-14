@@ -9,14 +9,6 @@
     Matheus Imazu Yoshida
 */
 
-//variáveis
-int qntdClientes = 0;
-int qntdInvestimentos = 0;
-Cliente clientes[LIMITE_CLIENTES] = {};
-Transacao transacoes[LIMITE_CLIENTES][1000] = {};
-int qtdTransacoes = 0;
-
-
 //structs
 typedef struct Data {
     int dia[2];
@@ -54,6 +46,12 @@ typedef struct Transacao{
     float valorResgate;
 } Transacao;
 
+//variáveis
+int qntdClientes = 0;
+int qntdInvestimentos = 0;
+Cliente clientes[LIMITE_CLIENTES] = {};
+Transacao transacoes[LIMITE_CLIENTES][1000] = {};
+int qtdTransacoes = 0;
 
 //protótipo das funções
 int validarData(int dia, int mes, int ano);
@@ -61,6 +59,8 @@ int validarTelefone(int ddd, char num[9]);
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori);
 float calcularIR(float lucro, Transacao transacao);
 float calcularValorDePorcentagem(float valor, float porcentagem);
+float somarImpostos(float imposto, float impostos[10]);
+float calcularValorDeResgate(float valorAplicado, float juros, float imposto);
 void registrarTransacao(Transacao transacao);
 Cliente cadastrarCliente();
 Investimento cadastrarInvestimento();
@@ -71,14 +71,14 @@ Cliente cadastrarCliente(){
     Cliente cliente;
     if(qntdClientes < LIMITE_CLIENTES){
         printf("Insira o seu nome.................................:");
-        fgets(cliente.Nome, 50, stdin);
+        fgets(cliente.nome, 50, stdin);
         printf("Insira o seu CPF (Insira apenas os números).......:");
-        fgets(cliente.CPF, 11, stdin);
+        fgets(cliente.cpf, 11, stdin);
         printf("Insira o seu telefone (Com o seu DDD).............:");
-        fgets(cliente.Telefone, 9, stdin);
+        fgets(cliente.telefone, 9, stdin);
         printf("Insira a sua data de nascimento...................:");
         getchar();
-        fgets(cliente.Data, 10, stdin);
+        fgets(cliente.data, 10, stdin);
         return cliente;
     }else{
         printf("Não é mais possível cadastrar clientes, capacidade máxima de clientes atingida");
@@ -107,7 +107,7 @@ Investimento cadastrarInvestimento(){
 
 void registrarTransacao(Transacao transacao){
     for(int i = 0; i < LIMITE_CLIENTES; i++){
-        int isCurrentClient = strcmp(clientes[i].Nome, transacao.cliente.Nome) == 0 && strcmp(clientes[i].CPF, transacao.cliente.CPF) == 0;
+        int isCurrentClient = strcmp(clientes[i].nome, transacao.cliente.nome) == 0 && strcmp(clientes[i].cpf, transacao.cliente.cpf) == 0;
         if(isCurrentClient){
             for(int j = 0; j < 1000; j++){
                 // corrigir o null.
@@ -153,13 +153,13 @@ float calcularValorDeResgate(float valorAplicado, float juros, float imposto){
 float calcularIR(float lucro, Transacao transacao){
     int dias = calcularDiferencaDeDatas(transacao.dataAplicacao, transacao.dataResgate);
     if(dias <= 180){
-        return calcularValorDaTaxa(lucro, 22.5);
+        return calcularValorDePorcentagem(lucro, 22.5);
     } else if(dias <= 360){
-        return calcularValorDaTaxa(lucro, 20);
+        return calcularValorDePorcentagem(lucro, 20);
     } else if(dias <= 720){
-        return calcularValorDaTaxa(lucro, 17.5);
+        return calcularValorDePorcentagem(lucro, 17.5);
     } else{
-        return calcularValorDaTaxa(lucro, 15);
+        return calcularValorDePorcentagem(lucro, 15);
     }
 }
 
@@ -175,19 +175,15 @@ float somarImpostos(float imposto, float impostos[10]){
 
 
 int tipoDeAplicacao () {
-    int validador = 0;
-
+    int aplicacao = 0;
     printf("Qual tipo de aplicação você deseja fazer?\nLCI / LCA (1)\nCDB (2)\nFundos (3)\n");
-    while(validador == 0){
-        scanf("%d", &escolherAplicacao); 
-        if(escolherAplicacao > 0 && escolherAplicacao <=3){
-            validador++;
-        }
+    while(aplicacao == 0 || aplicação > 3){
+        scanf("%d", &aplicacao); 
     }
-    return(escolherAplicacao);
+    return(aplicacao);
 }
 
 
-int main {
+int main() {
     return 0;
 }
