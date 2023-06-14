@@ -3,6 +3,7 @@
 #define LIMITE_CLIENTES 100
 #define LIMITE_INVESTIMENTOS 30
 
+
 /*
     Augusto Kenji Hirata Saraiva    RA: 2564335
     Pedro Henrique da Costa Silva   RA: 2575400
@@ -121,7 +122,6 @@ void registrarTransacao(Transacao transacao){
     }
 }
 
-
 // funções de validação
 int validarData(int dia, int mes, int ano){
     return (dia > 1 && dia < 30) && (mes > 1 || mes < 12) && (ano > 1900 || ano < 2023);
@@ -177,7 +177,7 @@ float somarImpostos(float imposto, float impostos[10]){
 int tipoDeAplicacao () {
     int aplicacao = 0;
     printf("Qual tipo de aplicação você deseja fazer?\nLCI / LCA (1)\nCDB (2)\nFundos (3)\n");
-    while(aplicacao == 0 || aplicação > 3){
+    while(aplicacao == 0 || aplicacao > 3){
         scanf("%d", &aplicacao); 
     }
     return(aplicacao);
