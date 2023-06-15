@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #define LIMITE_CLIENTES 100
 #define LIMITE_INVESTIMENTOS 30
 
@@ -12,29 +13,28 @@
 
 //structs
 typedef struct Data {
-    int dia[2];
-    int mes[2];
-    int ano[4];
+    int dia;
+    int mes;
+    int ano;
 } Data;
 
 typedef struct Telefone {
-    char ddd[2];
-    char num[9];
+    int ddd;
+    long int num;
 } Telefone;
 
 typedef struct Cliente {
     char nome[50];
     char cpf[11];
-    char telefone[9];
-    char data[10];
+    Telefone telefone;
+    Data data;
 } Cliente;
 
 typedef struct Investimento {
         int tipoAplicacao;
         char emissor[100];
         float taxa;
-        char ativo[5];
-
+        char ativo;
 } Investimento;
 
 typedef struct Transacao{
@@ -56,18 +56,23 @@ int qtdTransacoes = 0;
 
 //protótipo das funções
 int validarData(int dia, int mes, int ano);
-int validarTelefone(int ddd, char num[9]);
+int validarTelefone(int ddd, long int num);
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori);
+int calcularComprimento(long int valor);
+int calcularPrimeiroNumero(int num);
 float calcularIR(float lucro, Transacao transacao);
 float calcularValorDePorcentagem(float valor, float porcentagem);
 float somarImpostos(float imposto, float impostos[10]);
 float calcularValorDeResgate(float valorAplicado, float juros, float imposto);
 void registrarTransacao(Transacao transacao);
+int encontrarCliente(Cliente cliente);
+void imprimirExtrato(int index, char cpf[11]);
+void gerarExtrato(Cliente cliente);
 Cliente cadastrarCliente();
 Investimento cadastrarInvestimento();
 
 
-//funções de cadastro e registros
+//funções de cadastro, registros e extratos
 Cliente cadastrarCliente(){
     Cliente cliente;
     if(qntdClientes < LIMITE_CLIENTES){
@@ -122,12 +127,46 @@ void registrarTransacao(Transacao transacao){
     }
 }
 
+int encontrarCliente(Cliente cliente){
+    for(int i = 0; i < 100; i++){
+        if(strcmp(clientes[i].cpf, cliente.cpf) == 0){
+            return i;
+        }
+    }
+}
+
+void imprimirExtrato(int index, char cpf[11]){
+    printf("Extrato do cliente %s\n", cpf);
+    for(int j = 0; transacoes[index][j].idTransacao != NULL; j++){
+        Transacao t = transacoes[index][j];
+        Cliente c = t.cliente;
+        Investimento i = t.investimento;
+        printf("ID da Transação: %d\n", t.idTransacao);
+        printf("Cliente:           Nome:%40s | CPF:%20s | Tel:%d %12ld | Data Nasc:%02d %02d %02d\n", 
+            c.nome, c.cpf, c.telefone.ddd, c.telefone.num, c.data.dia, c.data.mes, c.data.ano
+        );
+        printf("Investimento:      Tipo:%40d | Emissor:%16s | Taxa:%14f | Ativo: %c\n",
+            i.tipoAplicacao, i.emissor, i.taxa, i.ativo
+        );
+        printf("Data de aplicação: %02d/%02d/%d \nData de resgate:  %02d/%02d/%d \nValor da aplicação:%f \nValor de resgate: %f \n\n\n",
+            t.dataAplicacao.dia, t.dataAplicacao.mes, t.dataAplicacao.ano,        
+            t.dataResgate.dia, t.dataResgate.mes, t.dataResgate.ano,
+            t.valorAplicacao, t.valorResgate
+        );
+    }
+}
+
+void gerarExtrato(Cliente cliente){    
+    imprimirExtrato(encontrarCliente(cliente), cliente.cpf);
+}
+
+
 // funções de validação
 int validarData(int dia, int mes, int ano){
     return (dia > 1 && dia < 30) && (mes > 1 || mes < 12) && (ano > 1900 || ano < 2023);
 }
-int validarTelefone(int ddd, char num[9]){
-    return ((strlen(num) == 9 && num[0] == '9') || (strlen(num) == 8)) && (ddd > 11 && ddd < 91);
+int validarTelefone(int ddd, long int num){
+    return ((calcularComprimento(num) == 9 && calcularPrimeiroNumero(num) == 9) || (calcularComprimento(num) == 8)) && (ddd > 11 && ddd < 91);
 }
 
 
@@ -170,6 +209,25 @@ float somarImpostos(float imposto, float impostos[10]){
         total += impostos[i];
     }
     return total;
+}
+
+int calcularComprimento(long int valor){
+    int length = 0;
+    for(int i = 1; i <= valor; i*=10){
+        length++;
+    }
+    return length;
+}
+
+int calcularPrimeiroNumero(int num){
+    int length = calcularComprimento(num);
+    int potencia10 = pow(10, length - 1);
+    for(int i = 0; i <= 10; i++){
+        if((potencia10 * i) > num && (potencia10 * i - num <= potencia10)){
+            return i - 1;
+        };
+    }
+    return potencia10;
 }
 //
 
