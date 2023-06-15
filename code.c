@@ -73,22 +73,25 @@ Investimento cadastrarInvestimento();
 
 
 //funções de cadastro, registros e extratos
-Cliente cadastrarCliente(){
-    Cliente cliente;
+void cadastrarCliente(){
     if(qntdClientes < LIMITE_CLIENTES){
-        printf("Insira o seu nome.................................:");
-        fgets(cliente.nome, 50, stdin);
-        printf("Insira o seu CPF (Insira apenas os números).......:");
-        fgets(cliente.cpf, 11, stdin);
-        printf("Insira o seu telefone (Com o seu DDD).............:");
-        fgets(cliente.telefone, 9, stdin);
-        printf("Insira a sua data de nascimento...................:");
         getchar();
-        fgets(cliente.data, 10, stdin);
-        return cliente;
-    }else{
-        printf("Não é mais possível cadastrar clientes, capacidade máxima de clientes atingida");
+        printf("Insira o seu nome.................................:");
+        fgets(listaClientes[qntdClientes].nome, 50, stdin);
+        printf("Insira o seu CPF (Insira apenas os números).......:");
+        fgets(listaClientes[qntdClientes].cpf, 11, stdin);
+        printf("Insira o DDD do seu número de telefone............:");
+        scanf("%d", &listaClientes[qntdClientes].telefone.ddd);
+        printf("Insira o seu número de telefone...................:");
+        scanf("%ld", &listaClientes[qntdClientes].telefone.num);
+        printf("Insira o dia que você nasceu......................:");
+        scanf("%d", &listaClientes[qntdClientes].data.dia);
+        printf("Insira o mês que você nasceu......................:");
+        scanf("%d", &listaClientes[qntdClientes].data.mes);
+        printf("Insira o ano que você nasceu......................:");
+        scanf("%d", &listaClientes[qntdClientes].data.ano);
     }
+    qntdClientes++;
 }
 
 Investimento cadastrarInvestimento(){
