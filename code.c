@@ -171,7 +171,29 @@ int validarData(int dia, int mes, int ano){
 int validarTelefone(int ddd, long int num){
     return ((calcularComprimento(num) == 9 && calcularPrimeiroNumero(num) == 9) || (calcularComprimento(num) == 8)) && (ddd > 11 && ddd < 91);
 }
-
+int validarCPF (char CPF[11]);
+char CPF[11];
+int i=0, soma=0,resto=0;
+    for(i=0;i<9;i++){
+    soma += ((CPF[i])*(10-i));
+    } 
+    resto = (soma % 11); 
+    if (resto < 2){
+        CPF[10] == 0;
+    } else {
+        CPF[10] == (11-resto);
+    }
+    for(i=0;i<10;i++){
+        soma += (CPF[i]*(11-i));
+    }
+    resto = (soma % 11);
+    if (resto < 2){
+        CPF[11] == 0;
+    } else {
+    CPF[11] == (11-resto);
+    }
+    return 0;
+}
 
 // funções auxiliares
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori){
