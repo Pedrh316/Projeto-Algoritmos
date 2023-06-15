@@ -53,6 +53,7 @@ int qntdInvestimentos = 0;
 Cliente clientes[LIMITE_CLIENTES] = {};
 Transacao transacoes[LIMITE_CLIENTES][1000] = {};
 int qtdTransacoes = 0;
+Cliente listaClientes[LIMITE_CLIENTES];
 
 //protótipo das funções
 int validarData(int dia, int mes, int ano);
@@ -68,7 +69,7 @@ void registrarTransacao(Transacao transacao);
 int encontrarCliente(Cliente cliente);
 void imprimirExtrato(int index, char cpf[11]);
 void gerarExtrato(Cliente cliente);
-Cliente cadastrarCliente();
+void cadastrarCliente();
 Investimento cadastrarInvestimento();
 
 
