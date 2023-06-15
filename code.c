@@ -172,8 +172,7 @@ int validarData(int dia, int mes, int ano){
 int validarTelefone(int ddd, long int num){
     return ((calcularComprimento(num) == 9 && calcularPrimeiroNumero(num) == 9) || (calcularComprimento(num) == 8)) && (ddd > 11 && ddd < 91);
 }
-int validarCPF (char CPF[11]);
-char CPF[11];
+int validarCPF (char CPF[11]){
 int i=0, soma=0,resto=0;
     for(i=0;i<9;i++){
     soma += ((CPF[i])*(10-i));
