@@ -53,90 +53,40 @@ int qntdInvestimentos = 0;
 Cliente clientes[LIMITE_CLIENTES] = {};
 Transacao transacoes[LIMITE_CLIENTES][1000] = {};
 int qtdTransacoes = 0;
-Cliente listaClientes[LIMITE_CLIENTES];
+int qtdClientes = 0;
+Investimento investimentos[LIMITE_INVESTIMENTOS];
+Investimento investimentosCadastrados[LIMITE_INVESTIMENTOS];
 
 //protótipo das funções
-int validarData(int dia, int mes, int ano);
+int validarData(int dia, int mes);
+int validarDataNascimento(int dia, int mes, int ano);
 int validarTelefone(int ddd, long int num);
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori);
 int calcularComprimento(long int valor);
 int calcularPrimeiroNumero(int num);
-float calcularIR(float lucro, Transacao transacao);
+float calcularIR(float lucro, float porcentagem);
 float calcularValorDePorcentagem(float valor, float porcentagem);
 float somarImpostos(float imposto, float impostos[10]);
-float calcularValorDeResgate(float valorAplicado, float juros, float imposto);
+float calcularValorDeResgate(float valorAplicado, Investimento investimento, int dias);
 void registrarTransacao(Transacao transacao);
-int encontrarCliente(Cliente cliente);
+int encontrarCliente(char cpf[11]);
 void imprimirExtrato(int index, char cpf[11]);
 void gerarExtrato(Cliente cliente);
 void cadastrarCliente();
+void definirOperacao();
+Transacao obterDadosTransacao();
 Investimento cadastrarInvestimento();
 
 
 //funções de cadastro, registros e extratos
-void cadastrarCliente(){
-    if(qntdClientes < LIMITE_CLIENTES){
-        getchar();
-        printf("Insira o seu nome.................................:");
-        fgets(listaClientes[qntdClientes].nome, 50, stdin);
-        printf("Insira o seu CPF (Insira apenas os números).......:");
-        fgets(listaClientes[qntdClientes].cpf, 11, stdin);
-        printf("Insira o DDD do seu número de telefone............:");
-        scanf("%d", &listaClientes[qntdClientes].telefone.ddd);
-        printf("Insira o seu número de telefone...................:");
-        scanf("%ld", &listaClientes[qntdClientes].telefone.num);
-        printf("Insira o dia que você nasceu......................:");
-        scanf("%d", &listaClientes[qntdClientes].data.dia);
-        printf("Insira o mês que você nasceu......................:");
-        scanf("%d", &listaClientes[qntdClientes].data.mes);
-        printf("Insira o ano que você nasceu......................:");
-        scanf("%d", &listaClientes[qntdClientes].data.ano);
-    }
-    qntdClientes++;
-}
 
-Investimento cadastrarInvestimento(){
-    Investimento investimento;
-    int validador = 0;
-    if(qntdInvestimentos < LIMITE_INVESTIMENTOS){
-        printf("Qual tipo de aplicação você deseja fazer?\nLCI / LCA (1)\nCDB (2)\nFundos (3)\n");
-        scanf("%d", &investimento.tipoAplicacao);
-        while(validador == 0){
-            scanf("%d", &investimento.tipoAplicacao); 
-            if(investimento.tipoAplicacao > 0 && investimento.tipoAplicacao <=3){
-                validador++;
-            }    
-        }
-        printf("Qual o banco que você deseja realizar essa aplicação?...:");
-        fgets(investimento.emissor, 100, stdin);
-        //Precisa ser finalizado taxa e ativo
-    }else{
-        printf("Não é mais possível cadastrar investimentos, capacidade máxima de investimentos atingida");
-    }
-}
-
-void registrarTransacao(Transacao transacao){
-    for(int i = 0; i < LIMITE_CLIENTES; i++){
-        int isCurrentClient = strcmp(clientes[i].nome, transacao.cliente.nome) == 0 && strcmp(clientes[i].cpf, transacao.cliente.cpf) == 0;
-        if(isCurrentClient){
-            for(int j = 0; j < 1000; j++){
-                // corrigir o null.
-                if(transacoes[i][j].idTransacao == NULL){
-                    transacoes[i][j] = transacao;
-                    break;
-                }
-            }
-            break;
-        }
-    }
-}
-
-int encontrarCliente(Cliente cliente){
+int encontrarCliente(char cpf[11]){
     for(int i = 0; i < 100; i++){
-        if(strcmp(clientes[i].cpf, cliente.cpf) == 0){
+        if(strcmp(clientes[i].cpf, cpf) == 0){
             return i;
         }
     }
+    return -1;
 }
 
 void imprimirExtrato(int index, char cpf[11]){
@@ -161,19 +111,22 @@ void imprimirExtrato(int index, char cpf[11]){
 }
 
 void gerarExtrato(Cliente cliente){    
-    imprimirExtrato(encontrarCliente(cliente), cliente.cpf);
+    imprimirExtrato(encontrarCliente(cliente.cpf), cliente.cpf);
 }
 
 
 // funções de validação
-int validarData(int dia, int mes, int ano){
-    return (dia > 1 && dia < 30) && (mes > 1 || mes < 12) && (ano > 1900 || ano < 2023);
+int validarDataNascimento(int dia, int mes, int ano){
+    return validarData(dia, mes) && (ano > 1900 || ano < 2023);
+}
+int validarData(int dia, int mes){
+    return (dia > 1 && dia < 30) && (mes > 1 || mes < 12);
 }
 int validarTelefone(int ddd, long int num){
     return ((calcularComprimento(num) == 9 && calcularPrimeiroNumero(num) == 9) || (calcularComprimento(num) == 8)) && (ddd > 11 && ddd < 91);
 }
 int validarCPF (char CPF[11]){
-int i=0, soma=0,resto=0;
+    int i=0, soma=0,resto=0;
     for(i=0;i<9;i++){
     soma += ((CPF[i])*(10-i));
     } 
@@ -194,6 +147,9 @@ int i=0, soma=0,resto=0;
     }
     return 0;
 }
+int validarInvestimento(int tipo){
+    return tipo >= 1 && tipo <= 15;
+}
 
 // funções auxiliares
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori){
@@ -207,23 +163,28 @@ float calcularValorDePorcentagem(float valor, float porcentagem){
     return (valor * (porcentagem / 100));
 }
 
-float calcularValorDeResgate(float valorAplicado, float juros, float imposto){
-    float total = 0;
-    float lucro = calcularValorDePorcentagem(valorAplicado, juros);
+float calcularValorDeResgate(float valorAplicado, Investimento investimento, int dias){    
+    float total = 0,
+          jurosDataResgate = (investimento.taxa / 360 * dias),
+          lucro = calcularValorDePorcentagem(valorAplicado, jurosDataResgate),
+          imposto = calcularImpostos(investimento.tipoAplicacao);
     total += valorAplicado + lucro - calcularValorDePorcentagem(lucro, imposto);
     return total;
 }
 
-float calcularIR(float lucro, Transacao transacao){
-    int dias = calcularDiferencaDeDatas(transacao.dataAplicacao, transacao.dataResgate);
+float calcularIR(float lucro, float porcentagem){
+    return calcularValorDePorcentagem(lucro, porcentagem);
+}
+
+float calcularPorcentagemIR(int dias){
     if(dias <= 180){
-        return calcularValorDePorcentagem(lucro, 22.5);
+        return 22.5;
     } else if(dias <= 360){
-        return calcularValorDePorcentagem(lucro, 20);
+        return 20;
     } else if(dias <= 720){
-        return calcularValorDePorcentagem(lucro, 17.5);
+        return 17.5;
     } else{
-        return calcularValorDePorcentagem(lucro, 15);
+        return 15;
     }
 }
 
@@ -254,19 +215,164 @@ int calcularPrimeiroNumero(int num){
     }
     return potencia10;
 }
+
+int obterInvestimento(){
+    int tipo = 0;    
+    printf("Digite o tipo de aplicação que deseja fazer:\n");
+    imprimirInvestimentos('C');
+    scanf("%d", &tipo);
+    if(validarInvestimento(tipo) == 0) return obterInvestimento();
+    return encontrarInvestimento(tipo);
+}
+
+void imprimirInvestimento(Investimento investimento){
+    printf("Tipo:%d\nEmissor:%s\nTaxa:%f\nAtivo:%c\n\n -------------------", 
+        investimento.tipoAplicacao, investimento.emissor,
+        investimento.taxa, investimento.ativo
+    );
+}
+void imprimirInvestimentos(char criterio){
+    if(criterio == 'C') {
+        for(int i = 0; i < LIMITE_INVESTIMENTOS; i++){
+            imprimirInvestimento(investimentosCadastrados[i]);
+        }
+    } else{
+        for(int i = 0; i < LIMITE_INVESTIMENTOS; i++){
+            imprimirInvestimento(investimentos[i]);
+        }
+    };
+}
+
+int encontrarInvestimento(int tipo){
+    for(int i = 0; i < 15; i++){
+        if(investimentos[i].tipoAplicacao == tipo){
+            return i;
+        }
+    }
+}
 //
 
 
 int tipoDeAplicacao () {
     int aplicacao = 0;
-    printf("Qual tipo de aplicação você deseja fazer?\nLCI / LCA (1)\nCDB (2)\nFundos (3)\n");
+    printf("Qual tipo de aplicação você deseja fazer?\n(1)LCI / LCA\n(2)CDB\n(3)Fundos\n");
     while(aplicacao == 0 || aplicacao > 3){
         scanf("%d", &aplicacao); 
     }
     return(aplicacao);
 }
 
+Transacao obterDadosTransacao(){
+    Transacao transacao;
+    int indiceCliente = 0, dias = 0;
+    char cpf[11];
+
+    printf("Digite o CPF do cliente:");
+    scanf("%s", cpf);    
+    indiceCliente = encontrarCliente(cpf);
+    if(indiceCliente == -1) return obterDadosTransacao();
+    transacao.cliente = clientes[indiceCliente];
+    transacao.investimento = investimentos[obterInvestimento()];
+    printf("Digite a data de aplicação no modelo DIA MÊS ANO: ");
+    scanf("%d %d %d", &transacao.dataAplicacao.dia, &transacao.dataAplicacao.mes, &transacao.dataAplicacao.ano);
+    printf("Digite o valor da aplicação: ");
+    scanf("%f", &transacao.valorAplicacao);
+    printf("Digite a data de resgate no modelo DIA MÊS ANO: ");
+    scanf("%d %d %d", &transacao.dataResgate.dia, &transacao.dataResgate.mes, &transacao.dataResgate.ano);
+    dias = calcularDiferencaDeDatas(transacao.dataAplicacao, transacao.dataResgate);
+    transacao.valorResgate = calcularValorDeResgate(transacao.valorAplicacao, transacao.investimento, dias);
+    qtdTransacoes++;
+    transacao.idTransacao = qtdTransacoes;
+    return transacao;
+}
+
+calcularImpostos(int tipo, int dias){
+    if(tipo >= 1 && tipo <= 5){
+        return 0;
+    }
+    if(tipo >= 6 && tipo <= 10){
+        return calcularPorcentagemIR(dias);
+    }
+    if(tipo >= 11 && tipo <= 15){
+        float impostos[10] = {calcularPorcentagemIR(dias), 0};
+        return somarImpostos(1, impostos);
+    }
+}
+
+// funções de serviços
+void cadastrarCliente(){
+    if(qntdClientes < LIMITE_CLIENTES){
+        getchar();
+        printf("Insira o seu nome:");
+        fgets(clientes[qntdClientes].nome, 50, stdin);
+        printf("Insira o seu CPF (Insira apenas os números):");
+        getchar();
+        fgets(clientes[qntdClientes].cpf, 11, stdin);        
+        printf("Digite seu número de celular ou fixo no formato DDD NUMERO:");
+        scanf("%d %ld", &clientes[qntdClientes].telefone.ddd, &clientes[qntdClientes].telefone.num);
+        printf("Digite sua data de nascimento no formato DIA MES ANO:");
+        scanf("%d %d %d", &clientes[qntdClientes].data.dia, 
+            &clientes[qntdClientes].data.mes, 
+            &clientes[qntdClientes].data.ano);
+    }
+    qntdClientes++;
+}
+
+Investimento cadastrarInvestimento(){
+    Investimento investimento;
+    int validador = 0;
+    if(qntdInvestimentos < LIMITE_INVESTIMENTOS){
+        printf("Qual tipo de aplicação você deseja fazer?\n(1)LCI / LCA\n(2)CDB\n(3)Fundos\n");
+        scanf("%d", &investimento.tipoAplicacao);
+        while(validador == 0){
+            scanf("%d", &investimento.tipoAplicacao); 
+            if(investimento.tipoAplicacao > 0 && investimento.tipoAplicacao <=3){
+                validador++;
+            }    
+        }
+        printf("Qual o banco que você deseja realizar essa aplicação?...:");
+        fgets(investimento.emissor, 100, stdin);
+        //Precisa ser finalizado taxa e ativo
+    }else{
+        printf("Não é mais possível cadastrar investimentos, capacidade máxima de investimentos atingida");
+    }
+}
+
+void registrarTransacao(Transacao transacao){
+    for(int i = 0; i < LIMITE_CLIENTES; i++){
+        int isCurrentClient = strcmp(clientes[i].nome, transacao.cliente.nome) == 0 && strcmp(clientes[i].cpf, transacao.cliente.cpf) == 0;
+        if(isCurrentClient){
+            for(int j = 0; j < 1000; j++){
+                // corrigir o null.
+                if(transacoes[i][j].idTransacao == NULL){                    
+                    transacoes[i][j] = transacao;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+}
+
+
+void definirOperacao(){
+    int operacao = 0;
+    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n");
+    scanf("%d", &operacao);
+    if(operacao == 1){
+        cadastrarCliente();
+    } else if(operacao == 2){
+        cadastrarInvestimento();
+    } else if(operacao == 3){
+        registrarTransacao(obterDadosTransacao());
+    } else{
+        printf("Essa operação não existe, tente novamente.\n");
+    }
+}
 
 int main() {
+    while(1){
+        definirOperacao();
+    }
     return 0;
 }
