@@ -47,6 +47,10 @@ typedef struct Transacao{
     float valorResgate;
 } Transacao;
 
+typedef struct Emissor{
+    char nome[50];
+} Emissor;
+
 //variáveis
 int qntdClientes = 0;
 int qntdInvestimentos = 0;
@@ -58,9 +62,9 @@ Investimento investimentos[3][5];
 Investimento investimentosCadastrados[3][5];
 
 //protótipo das funções
-int validarData(int dia, int mes);
-int validarDataNascimento(int dia, int mes, int ano);
-int validarTelefone(int ddd, long int num);
+int validarData(Data d);
+int validarDataNascimento(Data d);
+int validarTelefone(Telefone t);
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori);
 int calcularComprimento(long int valor);
 int calcularPrimeiroNumero(int num);
@@ -74,10 +78,25 @@ void imprimirExtrato(int index, char cpf[11]);
 void gerarExtrato(Cliente cliente);
 void cadastrarCliente();
 void definirOperacao();
+int procurarInvestimento(Investimento investimentos[3][5], int tipoAplicacao, int emissor);
+int validarCadastroCliente(Cliente c);
+int validarCadastroInvestimento(int tipoAplicacao, int emissor);
+Emissor converterEmissorParaNome(int emissor);
+int continuarProcesso();
 Transacao obterDadosTransacao();
-Investimento cadastrarInvestimento();
+void cadastrarInvestimento();
 float calcularImpostos(int tipo, int dias);
 
+
+//funções para teste
+imprimirClientes(){
+    for(int i = 0; i < LIMITE_CLIENTES; i++){
+        Cliente c = clientes[i];
+        int ddd = c.telefone.ddd, dia = c.data.dia, mes = c.data.mes, ano = c.data.ano;
+        long int num = c.telefone.num;
+        printf("Nome:%s\nCPF:%s\nN° Telefone:%d %ld, Nascimento:%d %d %d", c.nome, c.cpf, ddd, num, dia, mes, ano);
+    }
+}
 
 //funções de cadastro, registros e extratos
 
@@ -110,14 +129,14 @@ void gerarExtrato(Cliente cliente){
 
 
 // funções de validação
-int validarDataNascimento(int dia, int mes, int ano){
-    return validarData(dia, mes) && (ano > 1900 || ano < 2023);
+int validarDataNascimento(Data d){
+    return validarData(d) && (d.ano > 1900 || d.ano < 2023);
 }
-int validarData(int dia, int mes){
-    return (dia > 1 && dia < 30) && (mes > 1 || mes < 12);
+int validarData(Data d){
+    return (d.dia > 1 && d.dia < 30) && (d.mes > 1 || d.mes < 12);
 }
-int validarTelefone(int ddd, long int num){
-    return ((calcularComprimento(num) == 9 && calcularPrimeiroNumero(num) == 9) || (calcularComprimento(num) == 8)) && (ddd > 11 && ddd < 91);
+int validarTelefone(Telefone t){
+    return ((calcularComprimento(t.num) == 9 && calcularPrimeiroNumero(t.num) == 9) || (calcularComprimento(t.num) == 8)) && (t.ddd > 11 && t.ddd < 91);
 }
 int validarCPF (char CPF[11]){
     int i=0, soma=0,resto=0;
@@ -144,8 +163,30 @@ int validarCPF (char CPF[11]){
 int validarInvestimento(int tipo){
     return tipo == 1 || tipo == 2 || tipo == 3;
 }
+int validarCadastroCliente(Cliente c){
+    return (validarDataNascimento(c.data) && validarTelefone(c.telefone));
+}
+int validarCadastroInvestimento(int tipoAplicacao, int emissor){
+    return (tipoAplicacao >= 1 && tipoAplicacao <= 3) && (emissor >= 1 && emissor <= 5);
+}
 
 // funções auxiliares
+int procurarInvestimento(Investimento investimentos[3][5], int tipoAplicacao, int emissor){
+    for(int i = 0; i < 5; i++){
+        if(strcmp(investimentos[tipoAplicacao - 1][i].emissor, converterEmissorParaNome(emissor).nome) == 0){
+            return i;
+        };
+    }
+    return -1;
+}
+
+Emissor converterEmissorParaNome(int numEmissor){
+    Emissor emissor;
+    char bancos[5][50] = {"Banco do Brasil", "Caixa", "Bradesco", "Itaú", "Santander"};
+    strcpy(emissor.nome, bancos[numEmissor - 1]);
+    return emissor;
+}
+
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori){
     int dia = dataPosteriori.dia - dataPriori.dia, 
         mes = dataPosteriori.mes - dataPriori.mes,
@@ -246,8 +287,6 @@ void imprimirInvestimentos(int tipo, char criterio){
 }
 
 int encontrarCliente(char cpf[11]){
-    printf("Arm:%s\n%sArm:%s\n", clientes[0].nome, clientes[0].cpf);
-    printf("%s\n", cpf);
     for(int i = 0; i < 100; i++){
         if(strcmp(clientes[i].cpf, cpf) == 0){
             return i;
@@ -306,40 +345,58 @@ float calcularImpostos(int tipo, int dias){
 
 // funções de serviços
 void cadastrarCliente(){
+    Cliente c;
     if(qntdClientes < LIMITE_CLIENTES){
         getchar();
         printf("Insira o seu nome:");
-        fgets(clientes[qntdClientes].nome, 51, stdin);
+        fgets(c.nome, 51, stdin);
         printf("Insira o seu CPF (Insira apenas os números):");
-        fgets(clientes[qntdClientes].cpf, 12, stdin);        
+        fgets(c.cpf, 12, stdin);        
         printf("Digite seu número de celular ou fixo no formato DDD NUMERO:");
-        scanf("%d %ld", &clientes[qntdClientes].telefone.ddd, &clientes[qntdClientes].telefone.num);
+        scanf("%d %ld", &c.telefone.ddd, &c.telefone.num);
         printf("Digite sua data de nascimento no formato DIA MES ANO:");
-        scanf("%d %d %d", &clientes[qntdClientes].data.dia, 
-            &clientes[qntdClientes].data.mes, 
-            &clientes[qntdClientes].data.ano);
+        scanf("%d %d %d", &c.data.dia, &c.data.mes, &c.data.ano);
+        if(validarCadastroCliente(c)){        
+            printf("Cliente cadastrado com sucesso\n");
+        } else{
+            printf("Ops! Parece que uma informação não está correta, informe seus dados novamente:\n");
+            cadastrarCliente();
+        }
+    } else{
+        printf("Limite de usuários cadastrados atingida.");
     }
-    qntdClientes++;
 }
 
-Investimento cadastrarInvestimento(){
-    Investimento investimento;
-    int validador = 0;
-    if(qntdInvestimentos < LIMITE_INVESTIMENTOS){
-        printf("Qual tipo de aplicação você deseja fazer?\n(1)LCI / LCA\n(2)CDB\n(3)Fundos\n");
-        scanf("%d", &investimento.tipoAplicacao);
-        while(validador == 0){
-            scanf("%d", &investimento.tipoAplicacao); 
-            if(investimento.tipoAplicacao > 0 && investimento.tipoAplicacao <=3){
-                validador++;
-            }    
-        }
-        printf("Qual o banco que você deseja realizar essa aplicação?...:");
-        fgets(investimento.emissor, 100, stdin);
-        //Precisa ser finalizado taxa e ativo
-    }else{
-        printf("Não é mais possível cadastrar investimentos, capacidade máxima de investimentos atingida");
+int continuarProcesso(){
+    int continuar = 0;
+    printf("(0)Não\n(1)Sim\n:");
+    scanf("%d", &continuar);    
+    if(continuar != 0 && continuar != 1){
+        printf("Opção inválida... Digite novamente:\n");
+        return continuarProcesso();
     }
+    return continuar;
+}
+
+void cadastrarInvestimento(){
+    int tipoAplicacao = 0, emissor = 0;
+    if(qntdInvestimentos == LIMITE_INVESTIMENTOS){     
+        printf("Não é mais possível cadastrar investimentos, capacidade máxima de investimentos atingida");
+        return NULL;
+    }
+    printf("Qual tipo de aplicação você deseja cadastrar?\n(1)LCI / LCA\n(2)CDB\n(3)Fundos\n");
+    scanf("%d", &tipoAplicacao);
+    printf("Qual banco você deseja cadastrar nessa aplicação?...:\n(1)Banco Do Brasil\n(2)Caixa\n(3)Bradesco\n(4)Itaú\n(5)Santander\n");
+    scanf("%d", &emissor);
+    if(procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor) != -1){
+        printf("Esse investimento já foi cadastrado, deseja fazer outro cadastro de investimento?\n");            
+        return continuarProcesso() ? cadastrarInvestimento() : NULL;
+    } 
+    if(validarCadastroInvestimento(tipoAplicacao, emissor) == 0){
+        printf("Os dados fornecidos não são válidos. Deseja tentar novamente?\n");
+        return continuarProcesso() ? cadastrarInvestimento() : NULL;
+    };    
+    investimentosCadastrados[tipoAplicacao][emissor - 1] = investimentos[tipoAplicacao][emissor - 1];
 }
 
 void registrarTransacao(Transacao transacao){
