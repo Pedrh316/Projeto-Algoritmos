@@ -138,33 +138,25 @@ int validarData(Data d){
 int validarTelefone(Telefone t){
     return ((calcularComprimento(t.num) == 9 && calcularPrimeiroNumero(t.num) == 9) || (calcularComprimento(t.num) == 8)) && (t.ddd > 11 && t.ddd < 91);
 }
-int validarCPF (char CPF[11]){
-    int i=0, soma=0,resto=0;
-    for(i=0;i<9;i++){
-    soma += ((CPF[i])*(10-i));
-    } 
-    resto = (soma % 11); 
-    if (resto < 2){
-        CPF[10] == 0;
-    } else {
-        CPF[10] == (11-resto);
+int validarCPF(char cpf[11]){
+    int soma = 0, resto = 0, digito = 0;
+    int digitoValido(int v){
+        for(int i = v; i > 1; i--){
+            soma += (cpf[v - i] - 48) * i;
+        }
+        resto = soma % 11;
+        digito = (11 - resto) % 10;
+        soma = 0;
+        resto = 0;
+        return cpf[v - 1] == digito + 48;
     }
-    for(i=0;i<10;i++){
-        soma += (CPF[i]*(11-i));
-    }
-    resto = (soma % 11);
-    if (resto < 2){
-        CPF[11] == 0;
-    } else {
-    CPF[11] == (11-resto);
-    }
-    return 0;
+    return digitoValido(10) && digitoValido(11);
 }
 int validarInvestimento(int tipo){
     return tipo == 1 || tipo == 2 || tipo == 3;
 }
 int validarCadastroCliente(Cliente c){
-    return (validarDataNascimento(c.data) && validarTelefone(c.telefone));
+    return (validarDataNascimento(c.data) && validarTelefone(c.telefone) && validarCPF(c.cpf));
 }
 int validarCadastroInvestimento(int tipoAplicacao, int emissor){
     return (tipoAplicacao >= 1 && tipoAplicacao <= 3) && (emissor >= 1 && emissor <= 5);
@@ -356,8 +348,14 @@ void cadastrarCliente(){
         scanf("%d %ld", &c.telefone.ddd, &c.telefone.num);
         printf("Digite sua data de nascimento no formato DIA MES ANO:");
         scanf("%d %d %d", &c.data.dia, &c.data.mes, &c.data.ano);
-        if(validarCadastroCliente(c)){        
-            printf("Cliente cadastrado com sucesso\n");
+        if(validarCadastroCliente(c)){   
+            if(encontrarCliente(c.cpf) == -1){
+                clientes[qntdClientes] = c;
+                printf("Cliente cadastrado com sucesso.\n");
+            } else{
+                printf("CPF já cadastrado. Tente novamente\n:");
+                cadastrarCliente();
+            }
         } else{
             printf("Ops! Parece que uma informação não está correta, informe seus dados novamente:\n");
             cadastrarCliente();
