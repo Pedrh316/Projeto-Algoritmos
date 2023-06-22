@@ -140,17 +140,24 @@ int validarTelefone(Telefone t){
 }
 int validarCPF(char cpf[11]){
     int soma = 0, resto = 0, digito = 0;
+    int saoIguais(){
+        int v = 0, primeiroCaractere = cpf[0];
+        for(int i = 0; i < 11; i++){
+            v += primeiroCaractere == cpf[i];
+        }
+        return v == 11;
+    }
     int digitoValido(int v){
         for(int i = v; i > 1; i--){
             soma += (cpf[v - i] - 48) * i;
         }
         resto = soma % 11;
-        digito = (11 - resto) % 10;
+        digito = ((resto*10) % 11) % 10;
         soma = 0;
         resto = 0;
         return cpf[v - 1] == digito + 48;
     }
-    return digitoValido(10) && digitoValido(11);
+    return digitoValido(10) && digitoValido(11) && saoIguais() == 0;
 }
 int validarInvestimento(int tipo){
     return tipo == 1 || tipo == 2 || tipo == 3;
