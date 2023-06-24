@@ -113,7 +113,7 @@ void attInvestimentos(){
 
 
 //funções para teste
-imprimirClientes(){
+void imprimirClientes(){
     for(int i = 0; i < LIMITE_CLIENTES; i++){
         Cliente c = clientes[i];
         int ddd = c.telefone.ddd, dia = c.data.dia, mes = c.data.mes, ano = c.data.ano;
@@ -333,9 +333,9 @@ void cadastrarCliente(){
     if(qntdClientes < LIMITE_CLIENTES){
         getchar();
         printf("Insira o seu nome:");
-        fgets(c.nome, 51, stdin);
+        fgets(c.nome, 50, stdin);
         printf("Insira o seu CPF (Insira apenas os números):");
-        fgets(c.cpf, 12, stdin);        
+        fgets(c.cpf, 11, stdin);        
         printf("Digite seu número de celular ou fixo no formato DDD NUMERO:");
         scanf("%d %ld", &c.telefone.ddd, &c.telefone.num);
         printf("Digite sua data de nascimento no formato DIA MES ANO:");
@@ -372,7 +372,7 @@ void cadastrarInvestimentoExistente(int tipoAplicacao){
     char emissor[100];
     int indiceInvestimento = 0;
     printf("Qual banco você deseja cadastrar nessa aplicação?...:\nBanco Do Brasil\nCaixa\nBradesco\nItaú\nSantander\nOBS: se houver na sua opção, informe letra maiúscula e acentos.\n:");
-    fgets(emissor, 101, stdin);
+    fgets(emissor, 100, stdin);
     emissor[strlen(emissor) - 1] = '\0';
     if(procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor) != -1){
         printf("Esse investimento já foi cadastrado, deseja fazer outro cadastro de investimento?\n");            
@@ -393,7 +393,7 @@ void cadastrarInvestimentoNovo(int tipoAplicacao){
     Investimento investimento;
     investimento.tipoAplicacao = tipoAplicacao;
     printf("Digite o nome do emissor\n:");
-    fgets(investimento.emissor, 101, stdin);
+    fgets(investimento.emissor, 100, stdin);
     investimento.emissor[strlen(investimento.emissor) - 1] = '\0';
     printf("Informe a taxa do investimento\n:");
     scanf("%f", &investimento.taxa);
@@ -476,7 +476,7 @@ void realizarTransacao(){
     };
     imprimirInvestimentos(tipoAplicacao, 'C');
     printf("Digite o emissor de algumas das opções listadas acima\n:");
-    fgets(emissor, 101, stdin);
+    fgets(emissor, 100, stdin);
     emissor[strlen(emissor) - 1] = '\0';
     indiceInvestimento = procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor);
     if(indiceInvestimento == -1){
