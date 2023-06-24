@@ -61,7 +61,7 @@ Transacao transacoes[LIMITE_CLIENTES][1000] = {};
 int qtdTransacoes = 0;
 int qtdClientes = 0;
 Investimento investimentos[3][LIMITE_BANCOS];
-Investimento investimentosCadastrados[3][5];
+Investimento investimentosCadastrados[3][LIMITE_BANCOS];
 
 
 //protótipo das funções
@@ -88,9 +88,15 @@ int continuarProcesso();
 Transacao obterDadosTransacao();
 void cadastrarInvestimento();
 float calcularImpostos(int tipo, int dias);
-void mudarAtivo(IndiceInvestimento indice);
+void mudarAtivo();
+void imprimirClientes();
 int encontrarIndiceVazio(Investimento investimentos[3][LIMITE_BANCOS], int tipoAplicacao);
 void attInvestimentos();
+void imprimirTiposDeInvestimento();
+void cadastrarInvestimentoExistente(int tipoAplicacao);
+void imprimirInvestimento(Investimento investimento);
+void imprimirInvestimentos(int tipo, char criterio);
+
 
 //atribuição de valores iniciais
 void attInvestimentos(){
@@ -104,6 +110,7 @@ void attInvestimentos(){
     }
 }
 
+
 //funções para teste
 imprimirClientes(){
     for(int i = 0; i < LIMITE_CLIENTES; i++){
@@ -115,7 +122,6 @@ imprimirClientes(){
 }
 
 //funções de cadastro, registros e extratos
-
 void imprimirExtrato(int index, char cpf[11]){
     printf("Extrato do cliente %s\n", cpf);
     for(int j = 0; transacoes[index][j].idTransacao != 0; j++){
@@ -476,26 +482,42 @@ void registrarTransacao(Transacao transacao){
     }
 }
 
-void mudarAtivo(IndiceInvestimento indice){
+void mudarAtivo(){
     char escolherAtivo;
     int validar = 0;
-    printf("Você deseja deixar o investimento como ativo ou não?\nDigite (s) para deixá-lo ativo e (n) para não deixá-lo ativo..:");
-    while(validar == 0){
-        scanf("%c", &escolherAtivo);
-        if(escolherAtivo == 's' || escolherAtivo == 'n'){
-            validar++;
-        }else{
-            printf("A opção escolhida não existe, tente novamente\n");
+    int indiceBanco = 0;
+    int tipoAplicacao;
+    char emissor[100];
+    
+    printf("Digite o tipo de aplicação do Investimento que você deseja mudar o ativo\n");
+    imprimirTiposDeInvestimento();
+    scanf("%d", &tipoAplicacao);
+    printf("Digite o emissor do Investimento que você deseja mudar o ativo\n:");
+    getchar(); 
+    fgets(emissor, 100, stdin);
+    emissor[strlen(emissor) - 1] = '\0';
+    indiceBanco = procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor);
+    if(indiceBanco != -1 && tipoAplicacao > 0 && tipoAplicacao < 4){
+        printf("Você deseja deixar o investimento como ativo ou não?\nDigite (s) para deixá-lo ativo e (n) para não deixá-lo ativo..:");
+        while(validar == 0){
+            scanf("%c", &escolherAtivo);
+            if(escolherAtivo == 's' || escolherAtivo == 'n'){
+                validar++;
+            }else{
+                printf("A opção escolhida não existe, tente novamente!!!\n\n");
+                mudarAtivo();
+            }
         }
+    }else{
+        printf("O investimento escolhido não existe, tente novamente!!!\n\n");
+        mudarAtivo();
     }
-    investimentosCadastrados[indice.tipo][indice.banco].ativo = escolherAtivo;
+    investimentosCadastrados[tipoAplicacao - 1][indiceBanco].ativo = escolherAtivo;
 }
 
 
 void definirOperacao(){
     int operacao = 0;
-    int tipoAplicacao;
-    char emissor[100];
     printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n");
     scanf("%d", &operacao);
     if(operacao == 1){
@@ -511,13 +533,7 @@ void definirOperacao(){
         getchar();    
         if(obterExtrato) gerarExtrato(dadosTransacao.cliente);
     } else if(operacao == 4){
-        printf("Digite o tipo de aplicação do Investimento que você deseja mudar o ativo\n");
-        imprimirTiposDeInvestimento();
-        scanf("%d", &tipoAplicacao);
-        printf("Digite o emissor do Investimento que você deseja mudar o ativo");
-        getchar(); 
-        fgets(emissor, 100, stdin);
-        procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor);
+        mudarAtivo();
     } else {
         printf("Essa operação não existe, tente novamente.\n");
         definirOperacao();
@@ -525,7 +541,7 @@ void definirOperacao(){
 }
 
 int main() {
-    attInvestimentos();
+    void attInvestimentos();
     while(1){
         definirOperacao();
     }
