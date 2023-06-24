@@ -8,7 +8,7 @@
 /*
     Augusto Kenji Hirata Saraiva    RA: 2564335
     Pedro Henrique da Costa Silva   RA: 2575400
-    Matheus Imazu Yoshida
+    Matheus Imazu Yoshida           RA: 2575388
 */
 
 //structs
@@ -31,10 +31,10 @@ typedef struct Cliente {
 } Cliente;
 
 typedef struct Investimento {
-        int tipoAplicacao;
-        char emissor[100];
-        float taxa;
-        char ativo;
+    int tipoAplicacao;
+    char emissor[100];
+    float taxa;
+    char ativo;
 } Investimento;
 
 typedef struct Transacao{
@@ -47,9 +47,10 @@ typedef struct Transacao{
     float valorResgate;
 } Transacao;
 
-typedef struct Emissor{
-    char nome[50];
-} Emissor;
+typedef struct IndiceInvestimento{
+    int tipo;
+    int banco;
+} IndiceInvestimento;
 
 //variáveis
 int qntdClientes = 0;
@@ -78,14 +79,14 @@ void imprimirExtrato(int index, char cpf[11]);
 void gerarExtrato(Cliente cliente);
 void cadastrarCliente();
 void definirOperacao();
-int procurarInvestimento(Investimento investimentos[3][5], int tipoAplicacao, int emissor);
+int procurarInvestimento(Investimento investimentos[3][5], int tipoAplicacao, char emissor[100]);
 int validarCadastroCliente(Cliente c);
 int validarCadastroInvestimento(int tipoAplicacao, int emissor);
-Emissor converterEmissorParaNome(int emissor);
 int continuarProcesso();
 Transacao obterDadosTransacao();
 void cadastrarInvestimento();
 float calcularImpostos(int tipo, int dias);
+void mudarAtivo(IndiceInvestimento indice);
 
 
 //funções para teste
@@ -140,24 +141,17 @@ int validarTelefone(Telefone t){
 }
 int validarCPF(char cpf[11]){
     int soma = 0, resto = 0, digito = 0;
-    int saoIguais(){
-        int v = 0, primeiroCaractere = cpf[0];
-        for(int i = 0; i < 11; i++){
-            v += primeiroCaractere == cpf[i];
-        }
-        return v == 11;
-    }
     int digitoValido(int v){
         for(int i = v; i > 1; i--){
             soma += (cpf[v - i] - 48) * i;
         }
         resto = soma % 11;
-        digito = ((resto*10) % 11) % 10;
+        digito = (11 - resto) % 10;
         soma = 0;
         resto = 0;
         return cpf[v - 1] == digito + 48;
     }
-    return digitoValido(10) && digitoValido(11) && saoIguais() == 0;
+    return digitoValido(10) && digitoValido(11);
 }
 int validarInvestimento(int tipo){
     return tipo == 1 || tipo == 2 || tipo == 3;
@@ -170,20 +164,13 @@ int validarCadastroInvestimento(int tipoAplicacao, int emissor){
 }
 
 // funções auxiliares
-int procurarInvestimento(Investimento investimentos[3][5], int tipoAplicacao, int emissor){
+int procurarInvestimento(Investimento investimentos[3][5], int tipoAplicacao, char emissor[100]){
     for(int i = 0; i < 5; i++){
-        if(strcmp(investimentos[tipoAplicacao - 1][i].emissor, converterEmissorParaNome(emissor).nome) == 0){
+        if(strcmp(investimentos[tipoAplicacao - 1][i].emissor, "") == 0){
             return i;
         };
     }
     return -1;
-}
-
-Emissor converterEmissorParaNome(int numEmissor){
-    Emissor emissor;
-    char bancos[5][50] = {"Banco do Brasil", "Caixa", "Bradesco", "Itaú", "Santander"};
-    strcpy(emissor.nome, bancos[numEmissor - 1]);
-    return emissor;
 }
 
 int calcularDiferencaDeDatas(Data dataPriori, Data dataPosteriori){
@@ -389,7 +376,8 @@ void cadastrarInvestimento(){
         printf("Não é mais possível cadastrar investimentos, capacidade máxima de investimentos atingida");
         return NULL;
     }
-    printf("Qual tipo de aplicação você deseja cadastrar?\n(1)LCI / LCA\n(2)CDB\n(3)Fundos\n");
+    printf("Qual tipo de aplicação você deseja cadastrar?\n");
+    imprimirTiposDeInvestimento();
     scanf("%d", &tipoAplicacao);
     printf("Qual banco você deseja cadastrar nessa aplicação?...:\n(1)Banco Do Brasil\n(2)Caixa\n(3)Bradesco\n(4)Itaú\n(5)Santander\n");
     scanf("%d", &emissor);
@@ -420,10 +408,27 @@ void registrarTransacao(Transacao transacao){
     }
 }
 
+void mudarAtivo(IndiceInvestimento indice){
+    char escolherAtivo;
+    int validar = 0;
+    printf("Você deseja deixar o investimento como ativo ou não?\nDigite (s) para deixá-lo ativo e (n) para não deixá-lo ativo..:");
+    while(validar == 0){
+        scanf("%c", &escolherAtivo);
+        if(escolherAtivo == 's' || escolherAtivo == 'n'){
+            validar++;
+        }else{
+            printf("A opção escolhida não existe, tente novamente\n");
+        }
+    }
+    investimentosCadastrados[indice.tipo][indice.banco].ativo = escolherAtivo;
+}
+
 
 void definirOperacao(){
     int operacao = 0;
-    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n");
+    int tipoAplicacao;
+    char emissor[100];
+    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n");
     scanf("%d", &operacao);
     if(operacao == 1){
         cadastrarCliente();
@@ -437,8 +442,17 @@ void definirOperacao(){
         scanf("%d", &obterExtrato);    
         getchar();    
         if(obterExtrato) gerarExtrato(dadosTransacao.cliente);
-    } else{
+    } else if(operacao == 4){
+        printf("Digite o tipo de aplicação do Investimento que você deseja mudar o ativo\n");
+        imprimirTiposDeInvestimento();
+        scanf("%d", &tipoAplicacao);
+        printf("Digite o emissor do Investimento que você deseja mudar o ativo");
+        getchar(); 
+        fgets(emissor, 100, stdin);
+        procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor);
+    } else {
         printf("Essa operação não existe, tente novamente.\n");
+        definirOperacao();
     }
 }
 
