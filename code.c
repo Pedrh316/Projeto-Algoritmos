@@ -335,7 +335,7 @@ void cadastrarCliente(){
         printf("Insira o seu nome:");
         fgets(c.nome, 50, stdin);
         printf("Insira o seu CPF (Insira apenas os números):");
-        fgets(c.cpf, 11, stdin);        
+        fgets(c.cpf, 12, stdin);        
         printf("Digite seu número de celular ou fixo no formato DDD NUMERO:");
         scanf("%d %ld", &c.telefone.ddd, &c.telefone.num);
         printf("Digite sua data de nascimento no formato DIA MES ANO:");
