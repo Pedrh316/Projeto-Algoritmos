@@ -153,7 +153,7 @@ void gerarExtrato(Cliente cliente){
 
 // funções de validação
 int validarDataNascimento(Data d){
-    return validarData(d) && (d.ano > 1900 || d.ano < 2023);
+    return validarData(d) && (d.ano > 1900 && d.ano < 2023);
 }
 int validarData(Data d){
     return (d.dia > 1 && d.dia < 30) && (d.mes > 1 || d.mes < 12);
@@ -371,7 +371,7 @@ int continuarProcesso(){
 void cadastrarInvestimentoExistente(int tipoAplicacao){
     char emissor[100];
     int indiceInvestimento = 0;
-    printf("Qual banco você deseja cadastrar nessa aplicação?...:\nBanco Do Brasil\nCaixa\nBradesco\nItaú\nSantander\nOBS: se houver na sua opção, informe letra maiúscula e acentos.\n:");
+    printf("Qual banco você deseja cadastrar nessa aplicação?...:\nBanco do Brasil\nCaixa\nBradesco\nItaú\nSantander\nOBS: se houver na sua opção, informe letra maiúscula e acentos.\n:");
     fgets(emissor, 100, stdin);
     emissor[strlen(emissor) - 1] = '\0';
     if(procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor) != -1){
