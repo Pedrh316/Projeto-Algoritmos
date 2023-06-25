@@ -548,7 +548,7 @@ void mudarAtivo(){
 
 void definirOperacao(){
     int operacao = 0;
-    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n");
+    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n(5)Imprimir clientes\n");
     scanf("%d", &operacao);
     if(operacao == 1){
         cadastrarCliente();
