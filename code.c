@@ -425,7 +425,6 @@ void cadastrarInvestimento(){
     } else{
         cadastrarInvestimentoExistente(tipoAplicacao);
     }
-    imprimirInvestimentos(tipoAplicacao, 'C');
 }
 
 int encontrarIndiceVazio(Investimento investimentos[3][LIMITE_BANCOS], int tipoAplicacao){
