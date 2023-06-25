@@ -112,20 +112,6 @@ void attInvestimentos(){
 }
 
 
-//funções para teste
-void imprimirClientes(){
-    if(qntdClientes > 0){
-        for(int i = 0; i < qntdClientes; i++){
-            Cliente c = clientes[i];
-            int ddd = c.telefone.ddd, dia = c.data.dia, mes = c.data.mes, ano = c.data.ano;
-            long int num = c.telefone.num;
-            printf("%dº|Nome:%-55s|CPF:%s|N° Telefone:(%d) %-9ld|Nascimento:%02d/%02d/%d|\n", i + 1, c.nome, c.cpf, ddd, num, dia, mes, ano);
-        }
-    }else{
-        printf("Não há clientes cadastrados, cadastre um cliente para ver a lista de clientes\n");
-    }
-}
-
 //funções de cadastro, registros e extratos
 void imprimirExtrato(int index, char cpf[11]){
     printf("Extrato do cliente %s\n", cpf);
@@ -304,8 +290,6 @@ int encontrarCliente(char cpf[11]){
     }
     return -1;
 }
-//
-
 
 int tipoDeAplicacao () {
     int aplicacao = 0;
@@ -332,6 +316,21 @@ float calcularImpostos(int tipo, int dias){
 }
 
 // funções de serviços
+void imprimirClientes(){
+    printf(" ____________________________________________________________________________________________ \n");
+    if(qntdClientes > 0){
+        for(int i = 0; i < qntdClientes; i++){
+            Cliente c = clientes[i];
+            int ddd = c.telefone.ddd, dia = c.data.dia, mes = c.data.mes, ano = c.data.ano;
+            long int num = c.telefone.num;
+            printf("| Nome:%-55s | N° Telefone:(%d) %-9ld |\n", c.nome, ddd, num);
+            printf(" -------------------------------------------------------------------------------------------- \n");
+        }
+    }else{
+        printf("Não há clientes cadastrados, cadastre um cliente para ver a lista de clientes\n");
+    }
+}
+
 void cadastrarCliente(){
     Cliente c;
     if(qntdClientes < LIMITE_CLIENTES){
@@ -486,6 +485,10 @@ void realizarTransacao(){
     indiceInvestimento = procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor);
     if(indiceInvestimento == -1){
         printf("Esse investimento não está cadastrado. Deseja tentar novamente?\n");
+        return continuarProcesso() ? realizarTransacao() : NULL;
+    }
+    if(investimentosCadastrados[tipoAplicacao - 1][indiceInvestimento].ativo == 'n'){
+        printf("Esse investimento não está ativo, para realizar uma transação com o investimento escolhido é necessário que ele esteja ativo.\nDeseja tentar novamente?\n");
         return continuarProcesso() ? realizarTransacao() : NULL;
     }
     transacao.investimento = investimentosCadastrados[tipoAplicacao - 1][indiceInvestimento];
