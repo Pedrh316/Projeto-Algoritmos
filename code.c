@@ -114,11 +114,15 @@ void attInvestimentos(){
 
 //funções para teste
 void imprimirClientes(){
-    for(int i = 0; i < LIMITE_CLIENTES; i++){
-        Cliente c = clientes[i];
-        int ddd = c.telefone.ddd, dia = c.data.dia, mes = c.data.mes, ano = c.data.ano;
-        long int num = c.telefone.num;
-        printf("Nome:%s\nCPF:%s\nN° Telefone:%d %ld, Nascimento:%d %d %d", c.nome, c.cpf, ddd, num, dia, mes, ano);
+    if(qntdClientes > 0){
+        for(int i = 0; i < qntdClientes; i++){
+            Cliente c = clientes[i];
+            int ddd = c.telefone.ddd, dia = c.data.dia, mes = c.data.mes, ano = c.data.ano;
+            long int num = c.telefone.num;
+            printf("%dº|Nome:%-55s|CPF:%s|N° Telefone:(%d) %-9ld|Nascimento:%02d/%02d/%d|\n", i + 1, c.nome, c.cpf, ddd, num, dia, mes, ano);
+        }
+    }else{
+        printf("Não há clientes cadastrados, cadastre um cliente para ver a lista de clientes\n");
     }
 }
 
@@ -334,6 +338,7 @@ void cadastrarCliente(){
         getchar();
         printf("Insira o seu nome:");
         fgets(c.nome, 50, stdin);
+        c.nome[strlen(c.nome) - 1] = '\0';
         printf("Insira o seu CPF (Insira apenas os números):");
         fgets(c.cpf, 12, stdin);        
         printf("Digite seu número de celular ou fixo no formato DDD NUMERO:");
@@ -344,6 +349,7 @@ void cadastrarCliente(){
             if(encontrarCliente(c.cpf) == -1){
                 clientes[qntdClientes] = c;
                 printf("Cliente cadastrado com sucesso.\n");
+                qntdClientes++;
             } else{
                 printf("CPF já cadastrado. Tente novamente\n:");
                 cadastrarCliente();
@@ -552,7 +558,9 @@ void definirOperacao(){
         realizarTransacao();
     } else if(operacao == 4){
         mudarAtivo();
-    } else {
+    } else if(operacao == 5){
+        imprimirClientes();
+    } else{
         printf("Essa operação não existe, tente novamente.\n");
     }
 }
