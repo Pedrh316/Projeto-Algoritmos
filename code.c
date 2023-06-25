@@ -153,10 +153,10 @@ void gerarExtrato(Cliente cliente){
 
 // funções de validação
 int validarDataNascimento(Data d){
-    return validarData(d) && (d.ano > 1900 && d.ano < 2023);
+    return validarData(d) && (d.ano >= 1900 && d.ano <= 2023);
 }
 int validarData(Data d){
-    return (d.dia > 1 && d.dia < 30) && (d.mes > 1 || d.mes < 12);
+    return (d.dia >= 1 && d.dia <= 30) && (d.mes >= 1 || d.mes <= 12);
 }
 int validarTelefone(Telefone t){
     return ((calcularComprimento(t.num) == 9 && calcularPrimeiroNumero(t.num) == 9) || (calcularComprimento(t.num) == 8)) && (t.ddd > 11 && t.ddd < 91);
