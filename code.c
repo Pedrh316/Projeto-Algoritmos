@@ -56,10 +56,11 @@ typedef struct IndiceInvestimento{
 //variáveis
 int qntdClientes = 0;
 int qntdInvestimentos = 0;
+int qtdClientes = 0;
+int qtdTransacoes = 0;
+float montantes[3][LIMITE_BANCOS];
 Cliente clientes[LIMITE_CLIENTES] = {};
 Transacao transacoes[LIMITE_CLIENTES][1000] = {};
-int qtdTransacoes = 0;
-int qtdClientes = 0;
 Investimento investimentos[3][LIMITE_BANCOS];
 Investimento investimentosCadastrados[3][LIMITE_BANCOS];
 
@@ -173,7 +174,6 @@ int validarCPF(char cpf[11]){
     return digitoValido(10) && digitoValido(11) && saoIguais() == 0;
 }
 int validarInvestimento(int tipo){
-    printf("oi %d\n", tipo);
     return tipo == 1 || tipo == 2 || tipo == 3;
 }
 int validarCadastroCliente(Cliente c){
@@ -504,6 +504,7 @@ void realizarTransacao(){
         return continuarProcesso() ? realizarTransacao() : NULL;
     }
     transacao.valorResgate = calcularValorDeResgate(transacao.valorAplicacao, transacao.investimento, dias);
+    montantes[tipoAplicacao - 1][indiceInvestimento] += transacao.valorAplicacao;
     qtdTransacoes++;
     transacao.idTransacao = qtdTransacoes;
 
@@ -512,6 +513,28 @@ void realizarTransacao(){
     scanf("%d", &obterExtrato);    
     getchar();   
     if(obterExtrato) gerarExtrato(transacao.cliente);
+}
+
+void imprimirMontante(){
+    int tipoAplicacao = 0, indiceInvestimento = 0;
+    char emissor[100];
+    printf("Digite o tipo de aplicação\n");
+    imprimirTiposDeInvestimento();
+    scanf("%d", &tipoAplicacao);
+    getchar();
+    if(validarInvestimento(tipoAplicacao) == 0){
+        printf("Valor digitado inválido. Deseja tentar novamente?\n");
+        return continuarProcesso() ? imprimirMontante() : NULL;
+    }
+    printf("Digite o nome do emissor:");
+    fgets(emissor, 100, stdin);
+    emissor[strlen(emissor) - 1] = '\0';
+    indiceInvestimento = procurarInvestimento(investimentosCadastrados, tipoAplicacao, emissor);
+    if(indiceInvestimento == -1){
+        printf("Emissor inválido. Deseja tentar novamente?\n");
+        return continuarProcesso() ? imprimirMontante() : NULL;
+    }
+    printf("Montante:%.3f\n", montantes[tipoAplicacao - 1][indiceInvestimento]);
 }
 
 void mudarAtivo(){
@@ -551,7 +574,7 @@ void mudarAtivo(){
 
 void definirOperacao(){
     int operacao = 0;
-    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n(5)Imprimir clientes\n");
+    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n(5)Imprimir clientes\n(6)Mostrar montante\n:");
     scanf("%d", &operacao);
     if(operacao == 1){
         cadastrarCliente();
@@ -563,6 +586,8 @@ void definirOperacao(){
         mudarAtivo();
     } else if(operacao == 5){
         imprimirClientes();
+    } else if(operacao == 6){
+        imprimirMontante();
     } else{
         printf("Essa operação não existe, tente novamente.\n");
     }
