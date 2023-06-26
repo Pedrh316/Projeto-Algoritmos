@@ -406,7 +406,7 @@ void cadastrarInvestimentoExistente(int tipoAplicacao){
     indiceInvestimento = procurarInvestimento(investimentos, tipoAplicacao, emissor);
     investimentosCadastrados[tipoAplicacao - 1][indiceVazio] = investimentos[tipoAplicacao - 1][indiceInvestimento];
     qntdInvestimentos++;
-    printf("Investimento cadastrado com sucesso.\n");
+    printf("Investimento cadastrado com sucesso.\n\n");
 }
 
 void cadastrarInvestimentoNovo(int tipoAplicacao){    
