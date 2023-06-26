@@ -97,6 +97,7 @@ void imprimirTiposDeInvestimento();
 void cadastrarInvestimentoExistente(int tipoAplicacao);
 void imprimirInvestimento(Investimento investimento);
 void imprimirInvestimentos(int tipo, char criterio);
+void atualizarTransacao(int tipoAplicacao, char emissor[100], char ativo);
 
 
 //atribuição de valores iniciais
@@ -108,43 +109,6 @@ void attInvestimentos(){
             strcpy(investimentos[i][j].emissor,bancos[j]);
             investimentos[i][j].taxa = 10 + j;
             investimentos[i][j].ativo = 's';
-        }
-    }
-}
-
-
-//funções de cadastro, registros e extratos
-void imprimirExtrato(int index, char cpf[11]){
-    printf("\nExtrato do cliente %s\n", cpf);
-    for(int j = 0; transacoes[index][j].idTransacao != 0; j++){
-        Transacao t = transacoes[index][j];
-        Cliente c = t.cliente;
-        Investimento i = t.investimento;
-        printf("ID da Transação: %d\n", t.idTransacao);
-        printf("Cliente:         Nome:%-40s | CPF:%-20s | Tel:%d %-12ld | Data Nasc:%02d %02d %02d\n", 
-            c.nome, c.cpf, c.telefone.ddd, c.telefone.num, c.data.dia, c.data.mes, c.data.ano
-        );
-        printf("Investimento:    Tipo:%-40d | Emissor:%-16s | Taxa:%-14f | Ativo: %c\n",
-            i.tipoAplicacao, i.emissor, i.taxa, i.ativo
-        );
-        printf("Data de aplicação: %02d/%02d/%d \nData de resgate:  %02d/%02d/%d \nValor da aplicação:%f \nValor de resgate: %f \n\n",
-            t.dataAplicacao.dia, t.dataAplicacao.mes, t.dataAplicacao.ano,        
-            t.dataResgate.dia, t.dataResgate.mes, t.dataResgate.ano,
-            t.valorAplicacao, t.valorResgate
-        );
-    }
-}
-
-void atualizarTransacao(int tipoAplicacao, char emissor[100], char ativo){
-    for(int i = 0; i < 100; i++){
-        for(int j = 0; j < 1000; j++){
-            Investimento invTransacao = transacoes[i][j].investimento;
-            if(invTransacao.tipoAplicacao == tipoAplicacao && strcmp(invTransacao.emissor, emissor) == 0){
-                transacoes[i][j].investimento.ativo = ativo;
-            }
-            if(transacoes[i][j].idTransacao == 0){
-                break;
-            }
         }
     }
 }
@@ -196,6 +160,31 @@ int validarCadastroInvestimento(int tipoAplicacao){
 }
 
 // funções auxiliares
+int continuarProcesso(){
+    int continuar = 0;
+    printf("(0)Não\n(1)Sim\n:");
+    scanf("%d", &continuar);    
+    if(continuar != 0 && continuar != 1){
+        printf("Opção inválida... Digite novamente:\n");
+        return continuarProcesso();
+    }
+    return continuar;
+}
+
+void atualizarTransacao(int tipoAplicacao, char emissor[100], char ativo){
+    for(int i = 0; i < 100; i++){
+        for(int j = 0; j < 1000; j++){
+            Investimento invTransacao = transacoes[i][j].investimento;
+            if(invTransacao.tipoAplicacao == tipoAplicacao && strcmp(invTransacao.emissor, emissor) == 0){
+                transacoes[i][j].investimento.ativo = ativo;
+            }
+            if(transacoes[i][j].idTransacao == 0){
+                break;
+            }
+        }
+    }
+}
+
 int procurarInvestimento(Investimento investimentos[3][LIMITE_BANCOS], int tipoAplicacao, char emissor[100]){
     for(int i = 0; i < LIMITE_BANCOS; i++){
         if(strcmp(investimentos[tipoAplicacao - 1][i].emissor, emissor) == 0){
@@ -331,6 +320,27 @@ float calcularImpostos(int tipo, int dias){
 }
 
 // funções de serviços
+void imprimirExtrato(int index, char cpf[11]){
+    printf("\nExtrato do cliente %s\n", cpf);
+    for(int j = 0; transacoes[index][j].idTransacao != 0; j++){
+        Transacao t = transacoes[index][j];
+        Cliente c = t.cliente;
+        Investimento i = t.investimento;
+        printf("ID da Transação: %d\n", t.idTransacao);
+        printf("Cliente:         Nome:%-40s | CPF:%-20s | Tel:%d %-12ld | Data Nasc:%02d %02d %02d\n", 
+            c.nome, c.cpf, c.telefone.ddd, c.telefone.num, c.data.dia, c.data.mes, c.data.ano
+        );
+        printf("Investimento:    Tipo:%-40d | Emissor:%-16s | Taxa:%-14f | Ativo: %c\n",
+            i.tipoAplicacao, i.emissor, i.taxa, i.ativo
+        );
+        printf("Data de aplicação: %02d/%02d/%d \nData de resgate:  %02d/%02d/%d \nValor da aplicação:%f \nValor de resgate: %f \n\n",
+            t.dataAplicacao.dia, t.dataAplicacao.mes, t.dataAplicacao.ano,        
+            t.dataResgate.dia, t.dataResgate.mes, t.dataResgate.ano,
+            t.valorAplicacao, t.valorResgate
+        );
+    }
+}
+
 void imprimirClientes(){
     printf(" ____________________________________________________________________________________________ \n");
     if(qntdClientes > 0){
@@ -375,17 +385,6 @@ void cadastrarCliente(){
     } else{
         printf("Limite de usuários cadastrados atingida.");
     }
-}
-
-int continuarProcesso(){
-    int continuar = 0;
-    printf("(0)Não\n(1)Sim\n:");
-    scanf("%d", &continuar);    
-    if(continuar != 0 && continuar != 1){
-        printf("Opção inválida... Digite novamente:\n");
-        return continuarProcesso();
-    }
-    return continuar;
 }
 
 void cadastrarInvestimentoExistente(int tipoAplicacao){
@@ -509,11 +508,11 @@ void realizarTransacao(){
     transacao.investimento = investimentosCadastrados[tipoAplicacao - 1][indiceInvestimento];
     printf("Digite a data de aplicação no modelo DIA MÊS ANO: ");
     scanf("%d %d %d", &transacao.dataAplicacao.dia, &transacao.dataAplicacao.mes, &transacao.dataAplicacao.ano);
-    printf("Digite o valor da aplicação: ");
-    getchar();
-    scanf("%f", &transacao.valorAplicacao);
     printf("Digite a data de resgate no modelo DIA MÊS ANO: ");
+    getchar();
     scanf("%d %d %d", &transacao.dataResgate.dia, &transacao.dataResgate.mes, &transacao.dataResgate.ano);
+    printf("Digite o valor da aplicação: ");
+    scanf("%f", &transacao.valorAplicacao);
     dias = calcularDiferencaDeDatas(transacao.dataAplicacao, transacao.dataResgate);
     if(dias < 0){
         printf("Data de resgate inválida. Deseja tentar novamente?\n");
