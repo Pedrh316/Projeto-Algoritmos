@@ -513,6 +513,7 @@ void realizarTransacao(){
     printf("Digite a data de aplicação no modelo DIA MÊS ANO: ");
     scanf("%d %d %d", &transacao.dataAplicacao.dia, &transacao.dataAplicacao.mes, &transacao.dataAplicacao.ano);
     printf("Digite o valor da aplicação: ");
+    getchar();
     scanf("%f", &transacao.valorAplicacao);
     printf("Digite a data de resgate no modelo DIA MÊS ANO: ");
     scanf("%d %d %d", &transacao.dataResgate.dia, &transacao.dataResgate.mes, &transacao.dataResgate.ano);
