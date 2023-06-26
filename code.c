@@ -150,8 +150,6 @@ void atualizarTransacao(int tipoAplicacao, char emissor[100], char ativo){
 }
 
 void gerarExtrato(Cliente cliente){    
-    int v = encontrarCliente(cliente.cpf);
-    printf("\n%d\n", v);
     imprimirExtrato(encontrarCliente(cliente.cpf), cliente.cpf);
 }
 
