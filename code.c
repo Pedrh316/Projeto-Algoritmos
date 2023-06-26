@@ -246,7 +246,7 @@ float calcularPorcentagemIR(int dias){
 float somarImpostos(float imposto, float impostos[10]){
     int total = imposto;
     for(int i = 0; i < 10; i++){
-        if(imposto == 0) break;
+        if(impostos[i] == 0) break;
         total += impostos[i];
     }
     return total;
@@ -328,8 +328,7 @@ float calcularImpostos(int tipo, int dias){
     }
     if(tipo == 3){
         float impostos[10] = {calcularPorcentagemIR(dias), 0};
-        printf("\n\n oi %f\n\n", somarImpostos(1, impostos));
-        return somarImpostos(1, impostos);
+        return somarImpostos((1 / (360.0 / dias)), impostos);
     }
 }
 
