@@ -577,12 +577,12 @@ void mudarAtivo(){
                 validar++;
             }else{
                 printf("A opção escolhida não existe, Deseja tentar novamente?\n");
-                return conitnuarProcesso() ? mudarAtivo() : NULL;
+                return continuarProcesso() ? mudarAtivo() : NULL;
             }
         }
     }else{
         printf("O investimento escolhido não existe. Deseja tentar novamente?\n");
-        return conitnuarProcesso() ? mudarAtivo() : NULL;
+        return continuarProcesso() ? mudarAtivo() : NULL;
     }
     investimentosCadastrados[tipoAplicacao - 1][indiceBanco].ativo = escolherAtivo;
     atualizarTransacao(tipoAplicacao,emissor,escolherAtivo);
