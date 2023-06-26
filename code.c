@@ -550,7 +550,7 @@ void imprimirMontante(){
         printf("Emissor inválido. Deseja tentar novamente?\n");
         return continuarProcesso() ? imprimirMontante() : NULL;
     }
-    printf("Montante:%.3f\n", montantes[tipoAplicacao - 1][indiceInvestimento]);
+    printf("Montante:%.3f\n\n", montantes[tipoAplicacao - 1][indiceInvestimento]);
 }
 
 void mudarAtivo(){
