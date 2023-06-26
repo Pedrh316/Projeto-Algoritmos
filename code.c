@@ -127,7 +127,7 @@ void imprimirExtrato(int index, char cpf[11]){
         printf("Investimento:    Tipo:%-40d | Emissor:%-16s | Taxa:%-14f | Ativo: %c\n",
             i.tipoAplicacao, i.emissor, i.taxa, i.ativo
         );
-        printf("Data de aplicação: %02d/%02d/%d \nData de resgate:  %02d/%02d/%d \nValor da aplicação:%f \nValor de resgate: %f \n\n\n",
+        printf("Data de aplicação: %02d/%02d/%d \nData de resgate:  %02d/%02d/%d \nValor da aplicação:%f \nValor de resgate: %f \n\n",
             t.dataAplicacao.dia, t.dataAplicacao.mes, t.dataAplicacao.ano,        
             t.dataResgate.dia, t.dataResgate.mes, t.dataResgate.ano,
             t.valorAplicacao, t.valorResgate
@@ -362,7 +362,7 @@ void cadastrarCliente(){
         if(validarCadastroCliente(c)){   
             if(encontrarCliente(c.cpf) == -1){
                 clientes[qntdClientes] = c;
-                printf("Cliente cadastrado com sucesso.\n\n");
+                printf("Cliente cadastrado com sucesso.\n");
                 qntdClientes++;
             } else{
                 printf("CPF já cadastrado. Deseja tentar novamente?\n:");
@@ -406,7 +406,7 @@ void cadastrarInvestimentoExistente(int tipoAplicacao){
     indiceInvestimento = procurarInvestimento(investimentos, tipoAplicacao, emissor);
     investimentosCadastrados[tipoAplicacao - 1][indiceVazio] = investimentos[tipoAplicacao - 1][indiceInvestimento];
     qntdInvestimentos++;
-    printf("Investimento cadastrado com sucesso.\n\n");
+    printf("Investimento cadastrado com sucesso.\n");
 }
 
 void cadastrarInvestimentoNovo(int tipoAplicacao){    
@@ -550,7 +550,7 @@ void imprimirMontante(){
         printf("Emissor inválido. Deseja tentar novamente?\n");
         return continuarProcesso() ? imprimirMontante() : NULL;
     }
-    printf("Montante:%.3f\n\n", montantes[tipoAplicacao - 1][indiceInvestimento]);
+    printf("Montante:%.3f\n", montantes[tipoAplicacao - 1][indiceInvestimento]);
 }
 
 void mudarAtivo(){
@@ -591,7 +591,7 @@ void mudarAtivo(){
 
 void definirOperacao(){
     int operacao = 0;
-    printf("Qual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n(5)Imprimir clientes\n(6)Mostrar montante\n:");
+    printf("\nQual operação você deseja fazer?\n(1)Cadastro de cliente\n(2)Cadastro de investimento\n(3)Transação\n(4)Mudar ativo\n(5)Imprimir clientes\n(6)Mostrar montante\n:");
     scanf("%d", &operacao);
     if(operacao == 1){
         cadastrarCliente();
