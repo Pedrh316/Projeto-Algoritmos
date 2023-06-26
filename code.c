@@ -135,6 +135,20 @@ void imprimirExtrato(int index, char cpf[11]){
     }
 }
 
+void atualizarTransacao(int tipoAplicacao, char emissor[100], char ativo){
+    for(int i = 0; i < 100; i++){
+        for(int j = 0; j < 1000; j++){
+            Investimento invTransacao = transacoes[i][j].investimento;
+            if(invTransacao.tipoAplicacao == tipoAplicacao && strcmp(invTransacao.emissor, emissor) == 0){
+                transacoes[i][j].investimento.ativo = ativo;
+            }
+            if(transacoes[i][j].idTransacao == 0){
+                break;
+            }
+        }
+    }
+}
+
 void gerarExtrato(Cliente cliente){    
     int v = encontrarCliente(cliente.cpf);
     printf("\n%d\n", v);
@@ -272,12 +286,16 @@ void imprimirInvestimentos(int tipo, char criterio){
     if(criterio == 'C') {
         for(int i = 0; i < LIMITE_BANCOS; i++){
             if(investimentosCadastrados[tipo - 1][i].tipoAplicacao == 0) break;
-            imprimirInvestimento(investimentosCadastrados[tipo - 1][i]);
+            if(investimentosCadastrados[tipo - 1][i].ativo != 'n'){
+                imprimirInvestimento(investimentosCadastrados[tipo - 1][i]);
+            }
         }
     } else{
         for(int i = 0; i < LIMITE_BANCOS; i++){
             if(investimentosCadastrados[tipo - 1][i].tipoAplicacao == 0) break;
-            imprimirInvestimento(investimentos[tipo - 1][i]);
+            if(investimentosCadastrados[tipo - 1][i].ativo != 'n'){
+                imprimirInvestimento(investimentos[tipo - 1][i]);
+            }
         }
     };
 }
@@ -569,6 +587,7 @@ void mudarAtivo(){
         mudarAtivo();
     }
     investimentosCadastrados[tipoAplicacao - 1][indiceBanco].ativo = escolherAtivo;
+    atualizarTransacao(tipoAplicacao,emissor,escolherAtivo);
 }
 
 
