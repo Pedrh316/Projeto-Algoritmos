@@ -244,7 +244,7 @@ float calcularPorcentagemIR(int dias){
 }
 
 float somarImpostos(float imposto, float impostos[10]){
-    int total = imposto;
+    float total = imposto;
     for(int i = 0; i < 10; i++){
         if(impostos[i] == 0) break;
         total += impostos[i];
