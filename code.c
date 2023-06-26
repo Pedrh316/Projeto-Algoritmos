@@ -115,7 +115,7 @@ void attInvestimentos(){
 
 //funções de cadastro, registros e extratos
 void imprimirExtrato(int index, char cpf[11]){
-    printf("Extrato do cliente %s\n", cpf);
+    printf("\nExtrato do cliente %s\n", cpf);
     for(int j = 0; transacoes[index][j].idTransacao != 0; j++){
         Transacao t = transacoes[index][j];
         Cliente c = t.cliente;
@@ -362,15 +362,15 @@ void cadastrarCliente(){
         if(validarCadastroCliente(c)){   
             if(encontrarCliente(c.cpf) == -1){
                 clientes[qntdClientes] = c;
-                printf("Cliente cadastrado com sucesso.\n");
+                printf("Cliente cadastrado com sucesso.\n\n");
                 qntdClientes++;
             } else{
-                printf("CPF já cadastrado. Tente novamente\n:");
-                cadastrarCliente();
+                printf("CPF já cadastrado. Deseja tentar novamente?\n:");
+                return continuarProcesso() ? cadastrarCliente() : NULL;
             }
         } else{
-            printf("Ops! Parece que uma informação não está correta, informe seus dados novamente:\n");
-            cadastrarCliente();
+            printf("Ops! Parece que uma informação não está correta, informe seus dados novamente?\n");
+            return continuarProcesso() ? cadastrarCliente() : NULL;
         }
     } else{
         printf("Limite de usuários cadastrados atingida.");
